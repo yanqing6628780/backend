@@ -12,10 +12,11 @@
                 <div class="row">
                     <div class="col-md-12">                    
                         <form id="search" class="form-inline">
-                            <div class="form-group">                                
-                                <input name="q" type="text" value="<?=$q?>" class="form-control" placeholder="关键字">
+                            <div class="form-group">                               
+                                <input name="q" type="text" value="<?=$q?>" class="form-control" placeholder="备注搜索">
                             </div>
                             <input type="button" value="搜索" class="btn btn-default" onclick="infoQuery()" >
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
                         </form>
                     </div>
                 </div>
@@ -23,7 +24,7 @@
                     <table class='table table-striped table-bordered table-hover'>
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>序号</th>
                                 <th>操作人</th>
                                 <th>备注</th>
                                 <th>操作时间</th>
@@ -32,8 +33,8 @@
                         <tbody>
                         <?php foreach($result as $key => $row):?>
                             <tr>
-                                <td><?=$row['id']?></td>
-                                <td><?=$row['operator']?></td>
+                                <td><?=$key+1?></td>
+                                <td><?=$operators[$row['operator']]?></td>
                                 <td><?=$row['remarks']?></td>
                                 <td><?=$row['datetime']?></td>
                             </tr>
@@ -55,7 +56,7 @@
                             </li>
                             <? } ?>
                             <li class="next <?=$current_page==$page ? 'disabled' : '' ?>" data-lp="<?=$current_page?>">
-                                <a class="ajaxify" href="<?=site_url($controller_url.'?page='.($current_page+1))?>">
+                                <a class="ajaxify" href="<?=site_url($next_link)?>">
                                 <icon class="icon-angle-right"></icon>
                                 </a>
                             </li>

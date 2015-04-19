@@ -16,7 +16,7 @@
                     <div class="col-md-12">                    
                         <form id="search" class="form-inline">
                             <div class="form-group">                                
-                                <input name="q" type="text" value="<?=$q?>" class="form-control" placeholder="关键字">
+                                <input name="q" type="text" value="<?=$q?>" class="form-control" placeholder="产品名称搜索">
                             </div>
                             <input type="button" value="搜索" class="btn btn-default" onclick="infoQuery()" >
                         </form>

@@ -40,7 +40,7 @@ class product extends CI_Controller {
         $like = array();
 
         if($q){
-            $like['product_name'] = $q;
+            $like['name'] = $q;
         }
 
         //查询数据的总量,计算出页数
@@ -54,10 +54,10 @@ class product extends CI_Controller {
         $product_data = $query->result_array();
         $this->data['current_page'] = $start;
 
-        $prev_link = $this->data['controller_url'].'?page='.($start-1);
+        $prev_link = $this->data['controller_url'].'?page='.($start == 1 ? $start : $start-1);
         $prev_link .= $q ? '&q='.$q : '';
 
-        $next_link = $this->data['controller_url'].'?page='.($start+1);
+        $next_link = $this->data['controller_url'].'?page='.($start == $page ? $start : $start+1);
         $next_link .= $q ? '&q='.$q : '';
 
         $this->data['prev_link'] = $prev_link;
@@ -185,11 +185,11 @@ class product extends CI_Controller {
                     $row['name'], $stock > 0 ? '入库' : '出库', 
                     abs($stock)
                 );
+                $log['pid'] = $id;
                 $log['operator'] = $operator;
                 $log['remarks'] = $default_remarks."<br>".$remarks;
                 $log['datetime'] = date('Y-m-d H:i:s');
                 $this->db->insert('stock_log', $log);
-                $response['a'] = $this->db->last_query();
 
             }else{
                 $response['status'] = "n";
@@ -202,6 +202,9 @@ class product extends CI_Controller {
 
     public function stock_log()
     {        
+        $this->config->load('wine_erp');
+        $this->data['operators'] = $this->config->item('operators');
+
         $this->general_mdl->setTable('stock_log');
 
         $product_data = array();
@@ -215,24 +218,25 @@ class product extends CI_Controller {
         $like = array();
 
         if($q){
-            $like['product_name'] = $q;
+            $like['remarks'] = $q;
         }
 
+        $this->data['controller_url'] = "admin/product/stock_log/?id=".$id;
         //查询数据的总量,计算出页数
-        $query = $this->general_mdl->get_query_or_like();
+        $query = $this->general_mdl->get_query_or_like($like, array("pid" => $id));
         $this->data['total'] = $query->num_rows();
         $page = ceil($query->num_rows()/$pageSize);
         $this->data['page'] = $page;
 
         //取出当前面数据
-        $query = $this->general_mdl->get_query_or_like($like, array(), $start-1, $pageSize);
+        $query = $this->general_mdl->get_query_or_like($like, array("pid" => $id), $start-1, $pageSize);
         $product_data = $query->result_array();
         $this->data['current_page'] = $start;
 
-        $prev_link = $this->data['controller_url'].'?page='.($start-1);
+        $prev_link = $this->data['controller_url'].'&page='.($start == 1 ? $start : $start-1);
         $prev_link .= $q ? '&q='.$q : '';
 
-        $next_link = $this->data['controller_url'].'?page='.($start+1);
+        $next_link = $this->data['controller_url'].'&page='.($start == $page ? $start : $start+1);
         $next_link .= $q ? '&q='.$q : '';
 
         $this->data['prev_link'] = $prev_link;
@@ -240,12 +244,12 @@ class product extends CI_Controller {
 
         $page_link = array();
         for ($i=1; $i <= $page; $i++){
-            $page_link[$i] = $this->data['controller_url'].'?page='.$i;
+            $page_link[$i] = $this->data['controller_url'].'&page='.$i;
             $page_link[$i] .= $q ? '&q='.$q : '';
         }
         $this->data['page_links'] = $page_link;
 
-        $this->data['title'] = '库存管理';
+        $this->data['title'] = '库存记录';
         $this->data['result'] = $product_data;
 
         $this->load->view('admin_product/stock_log', $this->data);

@@ -1,6 +1,6 @@
 <!-- BEGIN FOOTER -->
 <div class="footer">
-    <div class="footer-inner">2014 &copy; by <a href='www.mysqt.com'>顺企通</a> 版本:20140219 </div>
+    <div class="footer-inner">2014 &copy; by <a href='#'>sam_leung</a> 20150419 </div>
     <div class="footer-tools">
         <span class="go-top">
         <i class="icon-angle-up"></i>
