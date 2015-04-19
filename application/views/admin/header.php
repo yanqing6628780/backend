@@ -297,15 +297,15 @@
         <!-- BEGIN USER LOGIN DROPDOWN -->
         <li class="dropdown user">
            <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-           <img style="height:30px" alt="" src="<?=$profile->photo ? get_image_url($profile->photo) : site_url('assets/img/avatar1_small.jpg') ?>"/>
-           <span class="username"><?=$this->dx_auth->get_username()?></span>
+           <img style="height:30px" alt="" src="<?=site_url('assets/img/avatar1_small.jpg') ?>"/>
+           <span class="username">用户功能</span>
            <i class="icon-angle-down"></i>
            </a>
            <ul class="dropdown-menu">
-              <li><a href="javascript:" onclick="LoadPageContentBody('<?=site_url('admin/user_admin/profile')?>', false)"><i class="icon-user"></i> 我的个人资料</a></li>
-              <li class="divider"></li>
+              <!-- <li><a href="javascript:" onclick="LoadPageContentBody('<?=site_url('admin/user_admin/profile')?>', false)"><i class="icon-user"></i> 我的个人资料</a></li> -->
               <li><a href="javascript:;" id="trigger_fullscreen"><i class="icon-move"></i> 全屏</a></li>
-              <li><a href="<?=site_url('admin/auth/logout')?>"><i class="icon-key"></i> 登出</a></li>
+              <li class="divider"></li>
+              <!-- <li><a href="<?=site_url('admin/auth/logout')?>"><i class="icon-key"></i> 登出</a></li> -->
            </ul>
         </li>
         <!-- END USER LOGIN DROPDOWN -->

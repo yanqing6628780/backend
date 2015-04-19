@@ -20,8 +20,8 @@ class product extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        checkIsLoggedIn();
-        $this->general_mdl->setTable('product');
+
+        $this->general_mdl->setTable('products');
 
         $this->load->model('dx_auth/users', 'users');
         $this->load->model('dx_auth/user_profile', 'profile');
@@ -30,11 +30,7 @@ class product extends CI_Controller {
     }
 
     public function index()
-    {
-        checkPermission('product_view');
-
-        $this->load->model('attr_mdl');
-        
+    {        
         $product_data = array();
 
         $this->data['q'] = $q = $this->input->get_post('q');
@@ -57,16 +53,6 @@ class product extends CI_Controller {
         $query = $this->general_mdl->get_query_or_like($like, array(), $start-1, $pageSize);
         $product_data = $query->result_array();
         $this->data['current_page'] = $start;
-        
-
-        foreach ($product_data as $key => $value) {
-            $this->general_mdl->setTable('small_class');
-            $query = $this->general_mdl->get_query_by_where(array('id' => $value['small_class_id']));
-            $product_data[$key]['small_class'] = $query->row()->small_class_name;
-
-            $product_data[$key]['color'] = $this->attr_mdl->get_attr($value['id'], 0);
-            $product_data[$key]['size'] = $this->attr_mdl->get_attr($value['id'], 1);
-        }
 
         $prev_link = $this->data['controller_url'].'?page='.($start-1);
         $prev_link .= $q ? '&q='.$q : '';
@@ -93,9 +79,6 @@ class product extends CI_Controller {
     //添加
     public function add()
     {
-        $this->general_mdl->setTable('small_class');
-        $this->data['small_classes'] = $this->general_mdl->get_query()->result_array();
-
         $this->load->view('admin_product/add', $this->data);
     }
 
@@ -103,32 +86,9 @@ class product extends CI_Controller {
     public function add_save()
     {
         $data = $this->input->post(NULL, TRUE);
-        $color = $data['color'];
-        $size = $data['size'];
-        unset($data['color']);
-        unset($data['size']);
 
-        $this->general_mdl->setData($data);
-        if($product_id = $this->general_mdl->create())
+        if($product_id = $this->general_mdl->create($data))
         {
-            $this->general_mdl->setTable('attribute_values');
-            $color_arr = explode(',', $color);
-            $size_arr = explode(',', $size);
-
-            $color_data['product_id'] = $size_data['product_id'] = $product_id;
-            foreach ($color_arr as $key => $value) {
-                $color_data['attribute_type'] = 0;
-                $color_data['values'] = $value;
-                $this->general_mdl->setData($color_data);
-                $this->general_mdl->create();
-            }
-            foreach ($size_arr as $key => $value) {
-                $size_data['attribute_type'] = 1;
-                $size_data['values'] = $value;
-                $this->general_mdl->setData($size_data);
-                $this->general_mdl->create();
-            }
-
             $response['status'] = "y";
             $response['info'] = "添加成功";
         }else{
@@ -147,18 +107,6 @@ class product extends CI_Controller {
         $query = $this->general_mdl->get_query_by_where(array('id' => $this->data['id']));
         $row = $query->row_array();
 
-        //分类
-        $this->general_mdl->setTable('small_class');
-        $this->data['small_classes'] = $this->general_mdl->get_query()->result_array();
-
-        $this->load->model('attr_mdl');
-
-        //关联颜色
-        $row['color'] = $this->attr_mdl->get_attr($row['id'], 0);
-
-        //关联尺码
-        $row['size'] = $this->attr_mdl->get_attr($row['id'], 1);
-
         $this->data['row'] = $row;
 
         $this->load->view('admin_product/edit', $this->data);
@@ -168,17 +116,9 @@ class product extends CI_Controller {
     public function edit_save()
     {
         $data = $this->input->post(NULL, TRUE);
-        
         $id = $data['id'];
-        $color = $data['color'];
-        $size = $data['size'];
-
         unset($data['id']);
-        unset($data['color']);
-        unset($data['size']);
-
-        $this->general_mdl->setData($data);
-        $isUpdated = $this->general_mdl->update(array('id'=>$id));
+        $isUpdated = $this->general_mdl->update(array('id'=>$id),$data);
 
         if($isUpdated){
             $response['status'] = "y";
@@ -188,54 +128,6 @@ class product extends CI_Controller {
             $response['info'] = "修改完成";
         }
 
-        $this->load->model('attr_mdl');
-
-        $this->general_mdl->setTable('attribute_values');
-        $color_data['product_id'] = $size_data['product_id'] = $id;
-
-        $new_color_arr = explode(',', $color);
-        $new_size_arr = explode(',', $size);
-        //已有颜色 已有尺码
-        $old_color_arr = $this->attr_mdl->get_attr($id, 0, 'array');
-        $old_size_arr = $this->attr_mdl->get_attr($id, 1, 'array');
-
-        foreach ($new_color_arr as $key => $value) {
-            //添加新颜色属性
-            if(!in_array($value, $old_color_arr)){
-                $color_data['attribute_type'] = 0;
-                $color_data['values'] = $value;
-                $this->general_mdl->setData($color_data);
-                $this->general_mdl->create();
-            }
-        }       
-
-        foreach ($old_color_arr as $key => $value) {
-            //删除旧颜色属性
-            if(!in_array($value, $new_color_arr)){
-                $where = array('product_id' => $id, 'values' => $value, 'attribute_type' => 0);
-                $this->general_mdl->delete($where);
-            }
-        }
-
-        foreach ($new_size_arr as $key => $value) {
-            //添加新尺码属性
-            if(!in_array($value, $old_size_arr)){
-                $size_data['attribute_type'] = 1;
-                $size_data['values'] = $value;
-                $this->general_mdl->setData($size_data);
-                $this->general_mdl->create();
-            }
-        }       
-
-        foreach ($old_size_arr as $key => $value) {
-            //删除旧尺码属性
-            if(!in_array($value, $new_size_arr)){
-                $where = array('product_id' => $id, 'values' => $value, 'attribute_type' => 1);
-                $this->general_mdl->delete($where);
-            }
-        }
-
-
         echo json_encode($response);
     }
 
@@ -243,7 +135,6 @@ class product extends CI_Controller {
     public function del()
     {
         $id = $this->input->post('id');
-        $code = $this->input->post('code');
 
         $response['success'] = false;
  
@@ -253,109 +144,111 @@ class product extends CI_Controller {
         echo json_encode($response);
     }
 
-    public function comments()
+    //出入库功能
+    public function stock_ctrl()
     {
-        $id = $this->input->get('id');
-        $this->data['name'] = $this->input->get('name');
+        $this->config->load('wine_erp');
+        $this->data['operators'] = $this->config->item('operators');
 
-        $this->general_mdl->setTable('comments');
-        $query = $this->general_mdl->get_query_by_where(array('product_id' => $id));
-        $comments = $query->result_array();
-
-        foreach ($comments as $key => $value) {
-            $this->general_mdl->setTable('user_profiles');
-            $query = $this->general_mdl->get_query_by_where(array('user_id' => $value['user_id']));
-            $comments[$key]['user_name'] = $query->row()->name;
-
-            $this->general_mdl->setTable('exchange_fair');
-            $query = $this->general_mdl->get_query_by_where(array('id' => $value['exchange_fair_id']));
-            $comments[$key]['exchange_name'] = $query->row()->exchange_fair_name;
-        }
-
-        $this->data['comments'] = $comments;
-        $this->load->view('admin_product/comment_list', $this->data);
+        $this->data['id'] = $this->input->post('id');
+        $this->data['name'] = $this->input->post('name');
+        $this->data['stock'] = $this->input->post('stock');
+        $this->load->view('admin_product/stock_ctrl', $this->data);
     }
 
-    public function relation()
+    public function stock_save()
     {
-        $this->load->model('product_mdl');
-
-        $this->general_mdl->setTable('product_rel');
-
-        /*产品资料*/
-        $query = $this->general_mdl->get_query();
-        $result = $query->result_array();
-
-        foreach ($result as $key => $value) {
-            $product_rel_name = array();
-            foreach (json_decode($value['product_rel_data']) as $pid) {
-                $product_rel_name[] = $this->product_mdl->get_product_info($pid)->product_name;
-            }
-            $result[$key]['product_rel_name'] = implode(',', $product_rel_name);
-        }
-        $this->data['result'] = $result;
-
-        $this->load->view('admin_product/rel_list', $this->data);
-    }    
-
-    public function set_relation()
-    {
-        $this->load->model('product_mdl');
-
-        $row_id = $this->data['id'] = $this->input->post('id');
-
-        $this->general_mdl->setTable('small_class');
-        $query = $this->general_mdl->get_query();
-        $rs = $query->result_array();
-
-        $this->general_mdl->setTable('product');
-        foreach ($rs as $key => $value) {
-            $query = $this->general_mdl->get_query_by_where(array('small_class_id' => $value['id']));
-            $products = $query->result_array();
-            $rs[$key]['products'] = $products;
-        }
-
-
-        $this->data['group_products'] = $rs;
-
-        $this->load->view('admin_product/product_relate', $this->data);
-    }
-
-    public function relation_save()
-    {
-        $row_id = $this->input->post('id');
-        $ids = $this->input->post('product_id');
-        $response['info'] = "保存失败";
-
-        // 过滤数组内的空值
-        $ids = $ids ? array_filter($ids) : array();
-
-        $this->general_mdl->setTable("product_rel");
-        $this->general_mdl->setData(array('product_rel_data' => json_encode($ids)));
-
-        if($row_id){
-            $this->general_mdl->update(array('id' => $row_id));
-            $response['info'] = "修改成功";
-        }else{
-            $this->general_mdl->create();
-            $response['info'] = "创建成功";
-        }
-
-        echo json_encode($response);
-    }
-
-    //关联删除
-    public function del_relation()
-    {
+        $stock = $this->input->post('stock');
         $id = $this->input->post('id');
+        $operator = $this->input->post('operator');
+        $remarks = $this->input->post('remarks');
 
-        $response['success'] = false;
-    
-        $this->general_mdl->setTable("product_rel");
-        $this->general_mdl->delete_by_id($id);
-        $response['success'] = true;
+        $query = $this->general_mdl->get_query_by_where(array('id' => $id));
+        $row = $query->row_array();
+
+        $data['stock']= $row['stock'] + $stock; //计算新库存
+
+        if($data['stock'] < 0){
+            $response['status'] = "n";
+            $response['info'] = "库存不能小于零";
+        }else{        
+            $isUpdated = $this->general_mdl->update(array('id'=>$id), $data);
+
+            if($isUpdated){
+                $response['status'] = "y";
+                $response['info'] = "操作成功";
+
+                //库存记录
+                $tmp = '%s %s->%s支';
+                $default_remarks = sprintf(
+                    $tmp, 
+                    $row['name'], $stock > 0 ? '入库' : '出库', 
+                    abs($stock)
+                );
+                $log['operator'] = $operator;
+                $log['remarks'] = $default_remarks."<br>".$remarks;
+                $log['datetime'] = date('Y-m-d H:i:s');
+                $this->db->insert('stock_log', $log);
+                $response['a'] = $this->db->last_query();
+
+            }else{
+                $response['status'] = "n";
+                $response['info'] = "操作失败";
+            }
+        }
 
         echo json_encode($response);
+    }
+
+    public function stock_log()
+    {        
+        $this->general_mdl->setTable('stock_log');
+
+        $product_data = array();
+
+        $this->data['id'] = $id = $this->input->get_post('id');
+
+        $this->data['q'] = $q = $this->input->get_post('q');
+        $this->data['start'] = $start = $this->input->get_post('page') ? $this->input->get_post('page') : 1;
+        $this->data['pageSize'] = $pageSize = $this->input->get_post('pageSize') ? $this->input->get_post('pageSize') : 20;
+
+        $like = array();
+
+        if($q){
+            $like['product_name'] = $q;
+        }
+
+        //查询数据的总量,计算出页数
+        $query = $this->general_mdl->get_query_or_like();
+        $this->data['total'] = $query->num_rows();
+        $page = ceil($query->num_rows()/$pageSize);
+        $this->data['page'] = $page;
+
+        //取出当前面数据
+        $query = $this->general_mdl->get_query_or_like($like, array(), $start-1, $pageSize);
+        $product_data = $query->result_array();
+        $this->data['current_page'] = $start;
+
+        $prev_link = $this->data['controller_url'].'?page='.($start-1);
+        $prev_link .= $q ? '&q='.$q : '';
+
+        $next_link = $this->data['controller_url'].'?page='.($start+1);
+        $next_link .= $q ? '&q='.$q : '';
+
+        $this->data['prev_link'] = $prev_link;
+        $this->data['next_link'] = $next_link;
+
+        $page_link = array();
+        for ($i=1; $i <= $page; $i++){
+            $page_link[$i] = $this->data['controller_url'].'?page='.$i;
+            $page_link[$i] .= $q ? '&q='.$q : '';
+        }
+        $this->data['page_links'] = $page_link;
+
+        $this->data['title'] = '库存管理';
+        $this->data['result'] = $product_data;
+
+        $this->load->view('admin_product/stock_log', $this->data);
     }
 }
 

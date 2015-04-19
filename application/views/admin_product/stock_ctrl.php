@@ -3,20 +3,46 @@
         <div class="caption"><i class="icon-reorder"></i></div>
     </div>
     <div class="portlet-body form">
-        <form id='addForm' class="form-horizontal" action="<?php echo site_url($controller_url."add_save")?>">
+        <form id='addForm' class="form-horizontal" action="<?php echo site_url($controller_url."stock_save")?>">
             <div class="form-body">
                 <div class="form-group">
                     <label class="col-md-3 control-label">产品名</label>
                     <div class="col-md-8">
-                        <input class="form-control" type='text' name="name" value='' datatype="*" nullmsg="请输入名称！"/>
+                        <p class="form-control-static"><?php echo $name ?></p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-3 control-label">单价</label>
+                    <label class="col-md-3 control-label">当前库存</label>
+                    <div class="col-md-8">
+                        <p class="form-control-static"><?php echo $stock ?></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">操作人</label>
+                    <div class="col-md-8">
+                        <select name="operator" class="form-control">
+                            <?php foreach ($operators as $key => $value): ?>
+                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">数量</label>
                     <div class="col-md-4">
                         <div class="input-group">
-                            <input class="form-control" type='text' name="price" value='' datatype="price" nullmsg="请输入价格！"/>
-                            <span class="input-group-addon">元/支</span>
+                            <input class="form-control" type='text' name="stock" value='' datatype="stock" nullmsg="请输入数量！"/>
+                            <span class="input-group-addon">支</span>
+                        </div>
+                        <div class="help-block">数量前加负号为减库存</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">备注</label>
+                    <div class="col-md-8">
+                        <textarea name="remarks" class="form-control"></textarea>
+                        <div class="help-block">
+                            如不填写,备注会自动填充"{产品名}出库{数量}"或"{产品名}入库{数量}"
                         </div>
                     </div>
                 </div>
@@ -27,6 +53,7 @@
             <div class="form-actions fluid">
                 <div class="col-md-offset-3 col-md-9">
                     <input type='button' id="btn_sub" class="btn blue btn-lg" value='保存'/>
+                    <input type="hidden" value="<?php echo $id ?>" name="id">
                 </div>
             </div>
         </form>
@@ -44,18 +71,14 @@ $(function () {
             objtip.text(msg);
         },
         datatype:{
-            "price" : /^\d+\.{0,1}\d{0,2}$/
+            "stock" : /^-{0,1}\d+$/
         },
         ajaxPost:true,
         callback:function(response){
-            if(response.status == "y"){            
-                if(confirm('是否继续添加')){
-                    form.resetForm();
-                    $('#product_view').click();
-                }else{
-                    $('#myModal').modal('hide');
-                    $('#product_view').click();
-                }
+            if(response.status == "y"){         
+                form.resetForm();
+                $('#myModal').modal('hide');
+                $('#product_view').click();
             }
         }
     });    

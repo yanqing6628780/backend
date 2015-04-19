@@ -42,10 +42,10 @@ class General_mdl extends CI_Model
     **
     ** return INT or false INT是插入数据库的ID
     */
-    public function create()
+    public function create($data)
     {
-        if($this->_data){
-            $this->db->insert($this->_table, $this->_data);
+        if($data){
+            $this->db->insert($this->_table, $data);
             return $this->db->insert_id();
         }else{
             return false;
@@ -79,14 +79,14 @@ class General_mdl extends CI_Model
     **
     ** return INT or false INT是插入数据库的ID
     */
-    public function update($where = array())
+    public function update($where = array(), $data)
     {
 
         if($where){
             $this->db->where($where);
-            if($this->_data)
+            if($data)
             {
-                $this->db->update($this->_table, $this->_data);
+                $this->db->update($this->_table, $data);
                 return $this->db->affected_rows();
             }else{
                 return false;
