@@ -4,29 +4,21 @@
     </div>
     <div class="portlet-body form">
         <form id='addForm' class="form-horizontal" action="<?php echo site_url($controller_url."add_save")?>">
-            <div class="form-body">
+            <div class="form-body">                              
                 <div class="form-group">
-                    <label class="col-md-3 control-label">订货会名</label>
-                    <div class="col-md-4">
-                        <input class="form-control" type='text' name="exchange_fair_name" value='' datatype="*" nullmsg="请输入名称！"/>
+                    <label class="col-md-3 control-label">开单人</label>
+                    <div class="col-md-2">
+                        <select name="operator" class="form-control">
+                            <?php foreach ($operators as $key => $value): ?>
+                                <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                            <?php endforeach ?>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-3 control-label">描述</label>
-                    <div class="col-md-4">
-                        <textarea class="form-control" name="description"  rows="6" datatype="*" nullmsg="请输入名称！"></textarea>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-3 control-label">开始日期</label>
-                    <div class="col-md-4">
-                         <input class="form-control date-picker" type='text' name="start_time" value='' datatype="*" nullmsg="请输入时间！"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-3 control-label">结束日期</label>
-                    <div class="col-md-4">
-                         <input class="form-control date-picker" type='text' name="end_time" value='' datatype="*" nullmsg="请输入时间！"/>
+                    <label class="col-md-3 control-label">备注</label>
+                    <div class="col-md-6">
+                        <textarea name="remarks" class="form-control"></textarea>
                     </div>
                 </div>
             </div>
@@ -42,9 +34,11 @@
 
 <script type="text/javascript" src="<?=base_url()?>assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 <script type="text/javascript" src="<?=base_url()?>assets/plugins/bootstrap-datepicker/js/locales/bootstrap-datepicker.zh-CN.js" charset="UTF-8"></script>
+
 <script type="text/javascript">
 $(function () {
-    DatePicker.init1();
+    // DatePicker.init1();
+
     var form = $("#addForm").Validform({
         btnSubmit: '#btn_sub',
         tiptype:4,
@@ -53,10 +47,8 @@ $(function () {
             if(response.status == "y"){            
                 if(confirm('是否继续添加')){
                     form.resetForm();
-                    $('#exchange_view').click();
                 }else{
-                    $('#myModal').modal('hide');
-                    $('#exchange_view').click();
+                    $('#order_view').click();
                 }
             }
         }

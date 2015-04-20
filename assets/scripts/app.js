@@ -243,7 +243,7 @@ var App = function () {
                     App.initAjax(); // initialize core stuff
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    // pageContentBody.html('<h4>Could not load the requested content.</h4>');
+                    pageContentBody.html('<h4>Could not load the requested content.</h4>');
                     App.unblockUI(pageContent);
                 },
                 async: false
@@ -697,7 +697,7 @@ var App = function () {
 
         $('.sidebar-option', panel).val("default");
         $('.header-option', panel).val("fixed");
-        $('.footer-option', panel).val("fixed");
+        $('.footer-option', panel).val("default");
 
         //handle theme layout
         var resetLayout = function () {
@@ -923,7 +923,7 @@ var App = function () {
                 centerY = true;
             }
             el.block({
-                message: '<img src="'+ BASEURL +'assets/img/ajax-loading.gif" align="">',
+                message: '<img src="./assets/img/ajax-loading.gif" align="">',
                 centerY: centerY != undefined ? centerY : true,
                 css: {
                     top: '10%',

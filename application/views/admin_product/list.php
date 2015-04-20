@@ -67,7 +67,7 @@
                             </li>
                             <? } ?>
                             <li class="next <?=$current_page==$page ? 'disabled' : '' ?>" data-lp="<?=$current_page?>">
-                                <a class="ajaxify" href="<?=site_url($controller_url.'?page='.($current_page+1))?>">
+                                <a class="ajaxify" href="<?=site_url($next_link)?>">
                                 <icon class="icon-angle-right"></icon>
                                 </a>
                             </li>
