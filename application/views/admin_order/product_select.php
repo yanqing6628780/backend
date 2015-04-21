@@ -18,7 +18,7 @@
             </div>
             <div class="form-actions fluid">
                 <div class="col-md-offset-3 col-md-9">
-                    <input type='button' id="btn_sub" class="btn blue btn-lg" value='提交 '/>
+                    <input type='button' id="next" class="btn blue btn-lg" value='下一步 '/>
                 </div>
             </div>
         </form>
@@ -31,18 +31,12 @@
 
 <script type="text/javascript">
 $(function () {
-    // DatePicker.init1();
     $('#products_select').multiSelect({
         selectableHeader: "<h4>产品</h4>",
         selectionHeader: "<h4>选中产品</h4>"
     });
-    var form = $("#addForm").Validform({
-        btnSubmit: '#btn_sub',
-        tiptype:4,
-        ajaxPost:true,
-        callback:function(response){
-            LoadPageContentBody('<?=site_url($controller_url."add")?>');
-        }
-    });    
+    $('#next').on('click', function () {     
+        LoadPageContentBody('<?=site_url($controller_url."add")?>', $("#addForm").serialize());
+    });   
 })
 </script>

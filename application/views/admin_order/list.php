@@ -16,7 +16,7 @@
                     <div class="col-md-12">                    
                         <form id="search" class="form-inline">
                             <div class="form-group">
-
+                                <input type="text" placeholder="订单号搜索" class="form-control" value="" name="q">
                             </div>
                             <input type="button" value="搜索" class="btn btn-default" onclick="infoQuery()" >
                         </form>
@@ -31,7 +31,6 @@
                                 <th>订单总价</th>
                                 <th>开单人</th>
                                 <th>开单时间</th>
-                                <th>状态</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
@@ -39,9 +38,9 @@
                         <?php foreach($result as $key => $row):?>
                             <tr>
                                 <td><?=$row['order_sn']?></td>
-                                <td><?=$row['type']?></td>
+                                <td><?=$order_type[$row['type']]?></td>
                                 <td><?=$row['total_price']?></td>
-                                <td><?=$row['biller']?></td>
+                                <td><?=$operators[$row['biller']]?></td>
                                 <td><?=$row['datetime']?></td>
                                 <td>
                                     <button class="btn btn-danger" onclick='del(<?=$row['id']?>)'><i class="icon-remove icon-white"></i> 删除</button>
@@ -82,8 +81,7 @@ function product_select(){
     LoadPageContentBody('<?=site_url($controller_url."product_select")?>');
 }
 function del(id, table){
-    common_del('<?=site_url($controller_url."del")?>', id, table, false);
-    infoQuery();
+    common_del('<?=site_url($controller_url."del")?>', id, table, "#order_view");
 }
 function infoQuery() {
     var formData = $('#search').serialize();

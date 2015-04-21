@@ -107,9 +107,7 @@ function generate_password( $length = 6, $type = 3 ) {
 */
 function get_order_sn()
 {
-    mt_srand((double) microtime() * 1000000);
-
-    return date('Ymd') . str_pad(mt_rand(1, 99999), 6, '0', STR_PAD_LEFT);
+    return date('Ymd') . substr(implode(NULL, array_map( 'ord', str_split(substr(uniqid(), 7, 13), 1)) ), 0, 6);
 }
 
 

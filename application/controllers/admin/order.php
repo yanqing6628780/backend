@@ -31,6 +31,10 @@ class order extends CI_Controller {
 
     public function index()
     {        
+        $this->config->load('wine_erp');
+        $this->data['operators'] = $this->config->item('operators');
+        $this->data['order_type'] = $this->config->item('order_type');
+
         $order_data = array();
 
         $this->data['q'] = $q = $this->input->get_post('q');
@@ -40,7 +44,7 @@ class order extends CI_Controller {
         $like = array();
 
         if($q){
-            $like['name'] = $q;
+            $like['order_sn'] = $q;
         }
 
         //查询数据的总量,计算出页数
@@ -87,8 +91,11 @@ class order extends CI_Controller {
     {
         $this->config->load('wine_erp');
         $this->data['operators'] = $this->config->item('operators');
+        $this->data['order_type'] = $this->config->item('order_type');
 
-        $pids = $this->input->post('pid');
+        $pids = $this->input->get_post('pid');
+
+        $this->data['products'] = $this->db->where_in('id', $pids)->get('products')->result_array();
 
         $this->load->view('admin_order/add', $this->data);
     }
@@ -96,10 +103,34 @@ class order extends CI_Controller {
     //添加保存
     public function add_save()
     {
-        $data = $this->input->post(NULL, TRUE);
+        $d['pid'] = $this->input->post('pid');
+        $d['qty'] = $this->input->post('qty');
+        $d['pname'] = $this->input->post('pname');
+        $d['price'] = $this->input->post('price');
 
-        if($order_id = $this->general_mdl->create($data))
+        $order['biller'] = $this->input->post('biller');
+        $order['remarks'] = $this->input->post('remarks');
+        $order['type'] = $this->input->post('type');
+        $order['datetime'] = date('Y-m-d H:i:s');
+        $order['total_price'] = $this->input->post('total_price');
+        $order['order_sn'] = get_order_sn();
+
+        //订单内产品处理
+        foreach ($d['pid'] as $key => $value) {
+            $product['pname'] = $d['pname'][$key];
+            $product['price'] = $d['price'][$key];
+            $product['qty'] = $d['qty'][$key];
+            $product['pid'] = $value;
+            $order_items[] = $product;
+        }
+
+        if($order_id = $this->general_mdl->create($order))
         {
+            foreach ($order_items as $key => $item) {
+                $item['oid'] = $order_id;
+                $this->db->insert('order_items', $item);
+            }
+
             $response['status'] = "y";
             $response['info'] = "添加成功";
         }else{
@@ -151,62 +182,6 @@ class order extends CI_Controller {
  
         $this->general_mdl->delete_by_id($id);
         $response['success'] = true;
-
-        echo json_encode($response);
-    }
-
-    //出入库功能
-    public function stock_ctrl()
-    {
-        $this->config->load('wine_erp');
-        $this->data['operators'] = $this->config->item('operators');
-
-        $this->data['id'] = $this->input->post('id');
-        $this->data['name'] = $this->input->post('name');
-        $this->data['stock'] = $this->input->post('stock');
-        $this->load->view('admin_order/stock_ctrl', $this->data);
-    }
-
-    public function stock_save()
-    {
-        $stock = $this->input->post('stock');
-        $id = $this->input->post('id');
-        $operator = $this->input->post('operator');
-        $remarks = $this->input->post('remarks');
-
-        $query = $this->general_mdl->get_query_by_where(array('id' => $id));
-        $row = $query->row_array();
-
-        $data['stock']= $row['stock'] + $stock; //计算新库存
-
-        if($data['stock'] < 0){
-            $response['status'] = "n";
-            $response['info'] = "库存不能小于零";
-        }else{        
-            $isUpdated = $this->general_mdl->update(array('id'=>$id), $data);
-
-            if($isUpdated){
-                $response['status'] = "y";
-                $response['info'] = "操作成功";
-
-                //库存记录
-                $tmp = '%s %s->%s支';
-                $default_remarks = sprintf(
-                    $tmp, 
-                    $row['name'], $stock > 0 ? '入库' : '出库', 
-                    abs($stock)
-                );
-                $log['pid'] = $id;
-                $log['operator'] = $operator;
-                $log['remarks'] = $default_remarks."<br>".$remarks;
-                $log['datetime'] = date('Y-m-d H:i:s');
-                $this->db->insert('stock_log', $log);
-
-            }else{
-                $response['status'] = "n";
-                $response['info'] = "操作失败";
-            }
-        }
 
         echo json_encode($response);
     }
