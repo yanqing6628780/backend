@@ -9,15 +9,14 @@ class Home extends CI_Controller {
         $this->load->library('tank_auth');
         $this->load->library('logger');
 
-        check_front_IsLoggedIn();
+        // check_front_IsLoggedIn();
 
         $this->load->model('tank_auth/profiles_mdl', 'profiles_mdl');
     }
 
 	public function index()
 	{
-        $this->general_mdl->setTable('small_class');
-        $data['small_classes'] = $this->general_mdl->get_query()->result_array();
+        redirect('admin');
 
 		$this->load->view('front/head');
 		$this->load->view('front/home', $data);
