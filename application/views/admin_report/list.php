@@ -17,19 +17,19 @@
                 <div class="row">
                     <div class="col-md-12">                    
                         <form id="search" class="form-inline">
-                            <div class="form-group">
+                            <div class="form-group col-md-2">
                                 <div class="input-group">
                                 <input type="text" placeholder="月份" class="form-control" value="<?php echo isset($month) ? $month : "" ?>" name="month" id="month">
                                 <span class="input-group-addon">月</span>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group  col-md-2">
                                 <div class="input-group">
                                 <input type="text" placeholder="年份" class="form-control" value="<?php echo isset($year) ? $year : "" ?>" name="year" id="year">
                                 <span class="input-group-addon">年</span>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-2">
                                 <select name="biller" class="form-control">
                                     <option value="">选择开单人</option>    
                                     <?php foreach ($operators as $key => $value): ?>

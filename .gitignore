@@ -3,3 +3,4 @@ captcha/*.png
 uploads/
 wechat_logs.txt
 captcha
+*.zip
