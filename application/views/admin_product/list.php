@@ -26,7 +26,6 @@
                     <table class='table table-striped table-bordered table-hover'>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>产品名</th>
                                 <th>单价</th>
                                 <th>库存</th>
@@ -36,17 +35,15 @@
                         <tbody>
                         <?php foreach($result as $key => $row):?>
                             <tr>
-                                <td><?=$row['id']?></td>
                                 <td><?=$row['name']?></td>
                                 <td><?=$row['price']?></td>
                                 <td><?=$row['stock']?></td>
                                 <td>
                                     <a href="#myModal" data-toggle="modal"  onclick="edit(<?=$row['id']?>)" class="btn green"> <i class="icon-pencil icon-white"></i> 编辑</a>
-                                    <button class="btn btn-danger" onclick='del(<?=$row['id']?>)'><i class="icon-remove icon-white"></i> 删除</button>
                                     <a href="#myModal" data-toggle="modal" class="btn btn-info" onclick='stock_ctrl(<?=$row['id']?>, "<?=$row['name']?>", "<?=$row['stock']?>")'><i class="icon-upload"></i> 
-                                        出/入库
+                                        入库
                                     </a>
-                                    <button class="btn btn-info" onclick='stock_log(<?=$row['id']?>)'><i class="icon-th-list"></i> 库存记录</button>
+                                    <button class="btn btn-warning" onclick='stock_log(<?=$row['id']?>)'><i class="icon-th-list"></i> 库存记录</button>
                                 </td>
                             </tr>
                         <?php endforeach;?>

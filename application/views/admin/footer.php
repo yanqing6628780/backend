@@ -54,6 +54,7 @@
 <script>
 jQuery(document).ready(function() {    
    App.init();
+   $('.page-sidebar .ajaxify.start').click()
 });
 var pageContentBody = $('.page-content .page-content-body');
 </script>

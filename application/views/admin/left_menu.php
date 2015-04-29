@@ -1,13 +1,21 @@
 <li class="start active">
-	<a href="javascript:;">
-		<i class="icon-home"></i> 
-		<span class="title">内容管理</span>
+	<a id="report_view" class="ajaxify start" href="<?php echo site_url('admin/report')?>">
+		<i class="icon-bar-chart"></i> 
+		<span class="title">销售统计</span>
 		<span class="selected"></span>
-		<span class="arrow open"></span>
 	</a>
-	<ul class="sub-menu">
-        <li><a id="product_view" class="ajaxify" href="<?php echo site_url('admin/product')?>" target="right">产品管理</a></li>
-		<li><a id="order_view" class="ajaxify" href="<?php echo site_url('admin/order')?>" target="right">订单管理</a></li>
-		<li><a id="report_view" class="ajaxify" href="<?php echo site_url('admin/report')?>" target="right">销售统计</a></li>
-	</ul>
+</li>
+<li>
+	<a id="product_view" class="ajaxify" href="<?php echo site_url('admin/product')?>">
+		<i class="icon-barcode"></i> 
+		<span class="title">库存管理</span>
+		<span class="selected"></span>
+	</a>
+</li>
+<li>
+	<a id="order_view" class="ajaxify" href="<?php echo site_url('admin/order')?>">
+		<i class="icon-table"></i> 
+		<span class="title">订单管理</span>
+		<span class="selected"></span>
+	</a>
 </li>

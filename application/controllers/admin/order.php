@@ -113,7 +113,7 @@ class order extends CI_Controller {
         $order['type'] = $this->input->post('type');
         $order['datetime'] = date('Y-m-d H:i:s');
         $order['total_price'] = $this->input->post('total_price');
-        $order['order_sn'] = get_order_sn();
+        $order['order_sn'] = $this->input->post('order_sn');
 
         //订单内产品处理
         foreach ($d['pid'] as $key => $value) {

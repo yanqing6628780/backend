@@ -10,7 +10,7 @@
                     <div class="col-md-8">
                         <?php foreach ($products as $key => $item): ?>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <p class="form-control-static">
                                 <span style="font-size: 100%" class="label label-info">名称:<?php echo $item['name'] ?></span>
                                 <span style="font-size: 100%" class="label label-danger">单价:<?php echo $item['price'] ?>元</span>
@@ -29,6 +29,12 @@
                             </div>
                         </div>
                         <?php endforeach ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">订单号</label>
+                    <div class="col-md-2">
+                        <input class="form-control" name="order_sn" value="" datatype="*"/>
                     </div>
                 </div>
                 <div class="form-group">

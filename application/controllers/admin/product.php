@@ -158,7 +158,7 @@ class product extends CI_Controller {
 
     public function stock_save()
     {
-        $stock = $this->input->post('stock');
+        $stock = abs($this->input->post('stock'));
         $id = $this->input->post('id');
         $operator = $this->input->post('operator');
         $remarks = $this->input->post('remarks');
