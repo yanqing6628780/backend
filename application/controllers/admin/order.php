@@ -38,8 +38,8 @@ class order extends CI_Controller {
         $order_data = array();
 
         $this->data['q'] = $q = $this->input->get_post('q');
-        $this->data['start'] = $start = $this->input->get_post('page') ? $this->input->get_post('page') : 1;
-        $this->data['pageSize'] = $pageSize = $this->input->get_post('pageSize') ? $this->input->get_post('pageSize') : 20;
+        // $this->data['start'] = $start = $this->input->get_post('page') ? $this->input->get_post('page') : 1;
+        // $this->data['pageSize'] = $pageSize = $this->input->get_post('pageSize') ? $this->input->get_post('pageSize') : 20;
 
         $like = array();
 
@@ -48,36 +48,55 @@ class order extends CI_Controller {
         }
 
         //查询数据的总量,计算出页数
-        $query = $this->general_mdl->get_query_or_like();
-        $this->data['total'] = $query->num_rows();
-        $page = ceil($query->num_rows()/$pageSize);
-        $this->data['page'] = $page;
+        // $query = $this->general_mdl->get_query_or_like();
+        // $this->data['total'] = $query->num_rows();
+        // $page = ceil($query->num_rows()/$pageSize);
+        // $this->data['page'] = $page;
 
         //取出当前面数据
-        $query = $this->general_mdl->get_query_or_like($like, array(), $start-1, $pageSize);
+        // $query = $this->general_mdl->get_query_or_like($like, array(), $start-1, $pageSize);
+        $query = $this->general_mdl->get_query_or_like($like, array());
         $order_data = $query->result_array();
-        $this->data['current_page'] = $start;
+        // $this->data['current_page'] = $start;
 
-        $prev_link = $this->data['controller_url'].'?page='.($start == 1 ? $start : $start-1);
-        $prev_link .= $q ? '&q='.$q : '';
+        // $prev_link = $this->data['controller_url'].'?page='.($start == 1 ? $start : $start-1);
+        // $prev_link .= $q ? '&q='.$q : '';
 
-        $next_link = $this->data['controller_url'].'?page='.($start == $page ? $start : $start+1);
-        $next_link .= $q ? '&q='.$q : '';
+        // $next_link = $this->data['controller_url'].'?page='.($start == $page ? $start : $start+1);
+        // $next_link .= $q ? '&q='.$q : '';
 
-        $this->data['prev_link'] = $prev_link;
-        $this->data['next_link'] = $next_link;
+        // $this->data['prev_link'] = $prev_link;
+        // $this->data['next_link'] = $next_link;
 
-        $page_link = array();
-        for ($i=1; $i <= $page; $i++){
-            $page_link[$i] = $this->data['controller_url'].'?page='.$i;
-            $page_link[$i] .= $q ? '&q='.$q : '';
-        }
-        $this->data['page_links'] = $page_link;
+        // $page_link = array();
+        // for ($i=1; $i <= $page; $i++){
+        //     $page_link[$i] = $this->data['controller_url'].'?page='.$i;
+        //     $page_link[$i] .= $q ? '&q='.$q : '';
+        // }
+        // $this->data['page_links'] = $page_link;
 
         $this->data['title'] = '订单管理';
         $this->data['result'] = $order_data;
 
         $this->load->view('admin_order/list', $this->data);
+    }
+
+    //单号检查
+    public function sn_check($sn)
+    {
+        $order_sn = $this->input->post('param');
+
+        $query = $this->general_mdl->get_query_by_where(array('order_sn' => $sn));
+
+        if($query->num_rows() < 0){
+            $response['status'] = "y";
+            $response['info'] = "该单号可用";
+        }else{
+            $response['status'] = "n";
+            $response['info'] = "该单号已存在";
+
+        }
+        echo json_encode($response);
     }
 
     public function product_select()
@@ -115,7 +134,7 @@ class order extends CI_Controller {
         $order['total_price'] = $this->input->post('total_price');
         $order['order_sn'] = $this->input->post('order_sn');
 
-        //订单内产品处理
+        //订单内产品数据
         foreach ($d['pid'] as $key => $value) {
             $product['pname'] = $d['pname'][$key];
             $product['price'] = $d['price'][$key];
@@ -126,9 +145,17 @@ class order extends CI_Controller {
 
         if($order_id = $this->general_mdl->create($order))
         {
+            //订单内产品写入数据库
             foreach ($order_items as $key => $item) {
                 $item['oid'] = $order_id;
-                $this->db->insert('order_items', $item);
+                $insert_id = $this->db->insert('order_items', $item);
+                //修改库存
+                if($insert_id){
+                    //退货时,补回库存;其他情况扣减库存
+                    $qty = $order['type'] == 4 ? $item['qty'] : (0-$item['qty']);
+                    $this->general_mdl->setTable('products');
+                    $this->general_mdl->field_arith('stock', $qty, array('id'=>$item['pid']));
+                }
             }
 
             $response['status'] = "y";
@@ -176,11 +203,28 @@ class order extends CI_Controller {
     //删除
     public function del()
     {
-        $id = $this->input->post('id');
+        $oid = $this->input->post('id');
 
         $response['success'] = false;
- 
-        $this->general_mdl->delete_by_id($id);
+
+        $query = $this->general_mdl->get_query_by_where(array('id' => $oid));
+        $order = $query->row_array();
+
+        //找出订单内产品
+        $query = $this->db->get_where('order_items', array('oid'=>$oid));
+
+        //将扣掉的产品数量补回库存
+        if($query->num_rows() > 0){        
+            foreach ($query->result_array() as $key => $item) {
+                //退货时,扣减库存;其他情况补回库存
+                $qty = $order['type'] == 4 ? (0-$item['qty']) : $item['qty'];
+                $this->general_mdl->setTable('products');
+                $this->general_mdl->field_arith('stock', $qty, array('id'=>$item['pid']));
+            }
+        }
+        //删除订单
+        $this->general_mdl->setTable('order');
+        $this->general_mdl->delete_by_id($oid);
         $response['success'] = true;
 
         echo json_encode($response);

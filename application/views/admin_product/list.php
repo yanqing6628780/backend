@@ -50,6 +50,7 @@
                         </tbody>
                     </table>
                 </div>
+                <?php if (isset($page_links)): ?>         
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="bootpag pagination">
@@ -71,6 +72,7 @@
                         </ul>
                     </div>
                 </div>
+                <?php endif ?>
             </div>
         </div>
     </div>

@@ -724,7 +724,7 @@
 					obj.removeClass("Validform_right Validform_wrong").addClass("Validform_checktip Validform_loading");//checking;
 					break;
 				case 2:
-					obj.removeClass("Validform_wrong Validform_loading").addClass("Validform_checktip Validform_right");//passed;
+					obj.removeClass("Validform_wrong Validform_loading").addClass("Validform_checktip help-block Validform_right");//passed;
 					break;
 				case 4:
 					obj.removeClass("Validform_right Validform_wrong Validform_loading").addClass("Validform_checktip");//for ignore;

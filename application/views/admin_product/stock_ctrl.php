@@ -34,7 +34,6 @@
                             <input class="form-control" type='text' name="stock" value='' datatype="stock" nullmsg="请输入数量！"/>
                             <span class="input-group-addon">支</span>
                         </div>
-                        <div class="help-block">数量前加负号为减库存</div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -54,6 +53,7 @@
                 <div class="col-md-offset-3 col-md-9">
                     <input type='button' id="btn_sub" class="btn blue btn-lg" value='保存'/>
                     <input type="hidden" value="<?php echo $id ?>" name="id">
+                    <input type="hidden" value="<?php echo $name ?>" name="name">
                 </div>
             </div>
         </form>

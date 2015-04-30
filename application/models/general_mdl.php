@@ -77,7 +77,7 @@ class General_mdl extends CI_Model
     //更新数据
     /*
     **
-    ** return INT or false INT是插入数据库的ID
+    ** return INT or false INT受影响的数据行数
     */
     public function update($where = array(), $data)
     {
@@ -95,18 +95,33 @@ class General_mdl extends CI_Model
         return false;
     }
 
+    //批量更新数据
+    /*
+    **
+    ** return INT or false INT受影响的数据行数
+    */
     public function update_where_in($field, $array = array())
     {
 
         if($array){
             $this->db->where_in($field, $array);
             if($this->_data){
-                return $this->db->update($this->_table, $this->_data);
+                $this->db->update($this->_table, $this->_data);
+                return $this->db->affected_rows();
             }else{
                 return false;
             }
         }
         return false;
+    }
+
+    //字段数量运算
+    public function field_arith ($field_name, $num, $where)
+    {
+        $this->db->set($field_name, $field_name.'+'.$num, FALSE);
+        $this->db->where($where);
+        $this->db->update($this->_table);
+        return $this->db->affected_rows();
     }
 
     public function get_query($start = 0, $pageSize = '', $orderby = '')

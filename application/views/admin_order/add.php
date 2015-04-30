@@ -7,27 +7,26 @@
             <div class="form-body">                              
                 <div class="form-group">
                     <label class="col-md-3 control-label">产品</label>
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <?php foreach ($products as $key => $item): ?>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p class="form-control-static">
-                                <span style="font-size: 100%" class="label label-info">名称:<?php echo $item['name'] ?></span>
-                                <span style="font-size: 100%" class="label label-danger">单价:<?php echo $item['price'] ?>元</span>
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                <label class="col-md-2 control-label">数量:</label>
-                                <div class="col-md-3">                                
-                                    <input type="text" placeholder="数量" datatype="n" name="qty[]" class="form-control qty" value="1" />
-                                    <input type="hidden" name="pid[]" value="<?php echo $item['id'] ?>" />
-                                    <input class="price" type="hidden" name="price[]" value="<?php echo $item['price'] ?>" />
-                                    <input class="" type="hidden" name="pname[]" value="<?php echo $item['name'] ?>" />
+                            <div class="row" style="margin-bottom: 3px">
+                                <div class="col-md-12">                            
+                                    <div class="input-group col-md-7">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn red"><?php echo $item['name'] ?></button>
+                                        </span>
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn green"><?php echo $item['price'] ?>元</button>
+                                        </span>
+                                        <input type="text" placeholder="数量" datatype="n" name="qty[]" class="form-control qty" value="1" ajaxurl="<?php echo site_url('admin/product/stock_check/'.$item['id']) ?>" />
+                                        <span class="input-group-addon">支</span>
+                                        <input type="hidden" name="pid[]" value="<?php echo $item['id'] ?>" />
+                                        <input class="price" type="hidden" name="price[]" value="<?php echo $item['price'] ?>" />
+                                        <input class="" type="hidden" name="pname[]" value="<?php echo $item['name'] ?>" />
+                                    </div>
+                                    <div class="Validform_checktip col-md-3" style="line-height: auto;height:auto"></div>
                                 </div>
-                                </div>
                             </div>
-                        </div>
                         <?php endforeach ?>
                     </div>
                 </div>
@@ -36,6 +35,7 @@
                     <div class="col-md-2">
                         <input class="form-control" name="order_sn" value="" datatype="*"/>
                     </div>
+                    <span class="Validform_checktip"></span>
                 </div>
                 <div class="form-group">
                     <label class="col-md-3 control-label">开单人</label>
@@ -50,7 +50,7 @@
                 <div class="form-group">
                     <label class="col-md-3 control-label">类型</label>
                     <div class="col-md-2">
-                        <select name="type" class="form-control">
+                        <select id="type" name="type" class="form-control">
                             <?php foreach ($order_type as $key => $value): ?>
                                 <option value="<?php echo $key ?>"><?php echo $value ?></option>
                             <?php endforeach ?>
@@ -100,11 +100,11 @@ $(function () {
             total_price += qty * price;
         });
         $total_price.val(total_price);
-    })
+    });
 
     var form = $("#addForm").Validform({
         btnSubmit: '#btn_sub',
-        tiptype:4,
+        tiptype:2,
         ajaxPost:true,
         callback:function(response){
             if(response.status == "y"){            
@@ -115,6 +115,15 @@ $(function () {
                 }
             }
         }
-    });    
+    });
+
+    $('#type').on('change', function(){
+        var t = $(this).val();
+        if(t == 4){
+            form.ignore('.qty');
+        }else{
+            form.unignore('.qty');
+        }
+    }); 
 })
 </script>

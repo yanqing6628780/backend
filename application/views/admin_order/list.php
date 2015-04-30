@@ -50,6 +50,7 @@
                         </tbody>
                     </table>
                 </div>
+                <?php if (isset($page_links)): ?>
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="bootpag pagination">
@@ -71,6 +72,7 @@
                         </ul>
                     </div>
                 </div>
+                <?php endif ?>
             </div>
         </div>
     </div>
@@ -80,8 +82,8 @@
 function product_select(){
     LoadPageContentBody('<?=site_url($controller_url."product_select")?>');
 }
-function del(id, table){
-    common_del('<?=site_url($controller_url."del")?>', id, table, "#order_view");
+function del(id){
+    common_del('<?=site_url($controller_url."del")?>', id, "", "#order_view");
 }
 function infoQuery() {
     var formData = $('#search').serialize();
