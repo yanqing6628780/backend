@@ -39,9 +39,9 @@
                             <tr>
                                 <td><?=$row['order_sn']?></td>
                                 <td><?=$order_type[$row['type']]?></td>
-                                <td><?=$row['total_price']?></td>
+                                <td><?=$row['type'] == 1 ? $row['total_price'] : ""?></td>
                                 <td><?=$operators[$row['biller']]?></td>
-                                <td><?=$row['datetime']?></td>
+                                <td><?= trans_date_format($row['datetime'], "Y-m-d H:i")?></td>
                                 <td>
                                     <button class="btn btn-danger" onclick='del(<?=$row['id']?>)'><i class="icon-remove icon-white"></i> 删除</button>
                                 </td>

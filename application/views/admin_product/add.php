@@ -48,7 +48,8 @@ $(function () {
         },
         ajaxPost:true,
         callback:function(response){
-            if(response.status == "y"){            
+            if(response.status == "y"){ 
+                alert('操作成功');
                 if(confirm('是否继续添加')){
                     form.resetForm();
                     $('#product_view').click();
@@ -56,6 +57,8 @@ $(function () {
                     $('#myModal').modal('hide');
                     $('#product_view').click();
                 }
+            }else{
+                alert('添加失败');
             }
         }
     });    

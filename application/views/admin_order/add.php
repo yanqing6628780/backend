@@ -107,12 +107,15 @@ $(function () {
         tiptype:2,
         ajaxPost:true,
         callback:function(response){
-            if(response.status == "y"){            
+            if(response.status == "y"){
+                alert('添加成功');
                 if(confirm('是否继续添加')){
                     LoadPageContentBody('<?=site_url($controller_url."product_select")?>');
                 }else{
                     $('#order_view').click();
                 }
+            }else{
+                alert('添加失败');
             }
         }
     });
