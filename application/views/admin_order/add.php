@@ -72,6 +72,7 @@
             </div>
             <div class="form-actions fluid">
                 <div class="col-md-offset-3 col-md-9">
+                    <a class="btn red btn-lg"  href="javascript:LoadPageContentBody('<?=site_url("admin/order")?>');">返回订单管理</a>
                     <input onclick="product_select()" type='button' id="btn_sub" class="btn green btn-lg" value='重新选择产品'/>
                     <input type='submit' id="btn_sub" class="btn blue btn-lg" value='保存'/>
                 </div>

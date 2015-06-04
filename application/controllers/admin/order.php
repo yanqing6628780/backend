@@ -81,6 +81,16 @@ class order extends CI_Controller {
         $this->load->view('admin_order/list', $this->data);
     }
 
+    public function detail($order_id)
+    {
+        $query = $this->db->get_where('order_items', array('oid' => $order_id));
+        $this->data['result'] = $query->result_array();
+
+        $query = $this->general_mdl->get_query_by_where(array('id' => $order_id));
+        $this->data['order'] = $query->row_array();
+        $this->load->view('admin_order/detail', $this->data);
+    }
+
     //单号检查
     public function sn_check($sn)
     {

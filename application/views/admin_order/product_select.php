@@ -18,6 +18,7 @@
             </div>
             <div class="form-actions fluid">
                 <div class="col-md-offset-3 col-md-9">
+                    <a class="btn red btn-lg"  href="javascript:LoadPageContentBody('<?=site_url("admin/order")?>');">返回订单管理</a>
                     <input type='button' id="next" class="btn blue btn-lg" value='下一步 '/>
                 </div>
             </div>
