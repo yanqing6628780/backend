@@ -38,6 +38,11 @@
 </div>
 <div class="row">
     <div class="col-md-12">
+         <div id="order_body"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
         <div class='portlet box green'>
             <div class="portlet-title">
                 <div class="caption"><i class="icon-globe"></i>
@@ -165,5 +170,13 @@ jQuery(document).ready(function() {
         minView: 4,
         maxView: 4,
     });
+
+    $.ajax({
+        url: '<?=site_url("admin/order")?>',
+        dataType: 'html',
+    })
+    .done(function(response) {
+        $('#order_body').html(response);
+    })
 });
 </script>

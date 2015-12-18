@@ -87,7 +87,7 @@ function detail(id){
     LoadPageContentBody('<?=site_url($controller_url."detail")?>');
 }
 function del(id){
-    common_del('<?=site_url($controller_url."del")?>', id, "", "#order_view");
+    common_del('<?=site_url($controller_url."del")?>', id, "", "#report_view");
 }
 function infoQuery() {
     var formData = $('#search').serialize();
